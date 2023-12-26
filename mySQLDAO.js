@@ -1,5 +1,4 @@
 const e = require('express');
-const mongodb = require('mongodb');
 var pmysql = require('promise-mysql');
 var pool;
 
@@ -18,20 +17,22 @@ pmysql.createPool({
         console.log("pool error:" + e)
     })
 
- function getstores() {
+
+
+function getstores() {
     return new Promise((resolve, reject) => {
         pool.query('SELECT * FROM store')
-        .then(result => {
-            resolve(result)
-        })
-        .catch(e => {
-            reject(e)
-        })
+            .then(result => {
+                resolve(result)
+            })
+            .catch(e => {
+                reject(e)
+            })
     })
 
-    
 
-    
-    
+
+
+
 }
-module.exports = {getstores};
+module.exports = { getstores };
