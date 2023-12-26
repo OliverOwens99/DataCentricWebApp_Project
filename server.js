@@ -26,17 +26,21 @@ app.get('/stores', (req, res) => {
 
 app.post('/stores', (req, res) => {
     mySQLDAO.getstores()
+
     .then(result => {
         console.log(result)
         res.render('stores', {stores: result}) // stores is the name of the variable in stores.ejs
+
     })
     .catch(e => {
         res.send(e)
     })
+
+    
 })
 
 app.get('/stores/edit/:sid', (req, res) => {
-    
+
 })
 
 
