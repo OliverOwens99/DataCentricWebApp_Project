@@ -165,12 +165,50 @@ app.get('/managers', async (req, res) => {
     res.render('managers', { managers });
 
 });
-
+// to display the addManager page
 app.get('/managers/add', async (req, res) => {
-
+    res.render('addManager', { errors: undefined });
 });
+// to add the manager to the database
+app.post('/managers/add', [
+    check('id')
+        .isLength({ min: 4 }).withMessage('Manager ID should be 4 characters')
+        .custom(async (value, { req }) => {
+            const manager = await MongoDAO.getManagerById(value);
+            if (manager) {
+                throw new Error('Manager ID must be unique');
+            }
+        }),
+    check('name')
+        .isLength({ min: 5 }).withMessage('Name must be > 5 characters'),
+    check('salary')
+        .isFloat({ min: 30000, max: 70000 }).withMessage('Salary must be between 30,000 and 70,000')
+], async (req, res) => {
+    try {
+        // Validate the request body
+        const errors = validationResult(req);
 
-app.post('/managers/add', async (req, res) => {
+        if (!errors.isEmpty()) {
+            // If there are validation errors, render the addManager page with errors
+            console.log(errors.array());
+            res.render('addManager', { errors: errors.array() });
+        } else {
+            // Validation passed, proceed with the insert logic
+            const { id, name, salary } = req.body;
+
+            try {
+                await MongoDAO.addManager(id, name, salary);
+                // Redirect to the managers page after a successful insert
+                res.redirect('/managers');
+            } catch (e) {
+                console.error(e);
+                res.status(500).send('An error occurred while inserting manager data.');
+            }
+        }
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('An error occurred while retrieving manager data.');
+    }
 
 });
 

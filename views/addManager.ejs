@@ -1,0 +1,19 @@
+<form action="/addManager" method="POST">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    
+    <label for="salary">Salary:</label>
+    <input type="number" id="salary" name="salary" required>
+    
+    <button type="submit">Add Manager</button>
+</form>
+
+<% if (errors && errors.length > 0) { %>
+    <ul>
+        <% errors.forEach(function(error) { %>
+            <li>
+                <%= error.msg %><br>
+            </li>
+        <% }); %>
+    </ul>
+<% } %>

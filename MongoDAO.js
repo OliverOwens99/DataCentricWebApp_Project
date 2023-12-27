@@ -34,4 +34,16 @@ const getManagerById = (mgrid) => {
     });
 };
 
-module.exports = { getManagers, getManagerById };
+const addManager = (manager) => {
+    return new Promise((resolve, reject) => {
+        coll.insertOne(manager)
+            .then(result => {
+                resolve(result);
+            })
+            .catch(error => {
+                reject(error);
+            });
+    });
+}
+
+module.exports = { getManagers, getManagerById, addManager};
