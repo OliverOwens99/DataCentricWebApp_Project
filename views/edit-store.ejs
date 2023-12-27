@@ -1,0 +1,19 @@
+<form action="/stores/edit/<%= store.sid %>" method="POST">
+    <label for="location">Location:</label>
+    <input type="text" id="location" name="location" value="<%= store.location %>" required minlength="1">
+
+    <label for="managerId">Manager ID:</label>
+    <input type="text" id="managerId" name="managerId" value="<%= store.managerId %>" required pattern="[A-Za-z0-9]{4}" data-validation-error-msg="Manager ID should be 4 characters">
+
+    <% if (errors && errors.length > 0) { %>
+        <ul>
+            <% errors.forEach(function(error) { %>
+                <li><%= error %></li>
+            <% }); %>
+        </ul>
+    <% } %>
+
+    <input type="text" id="sid" name="sid" value="<%= store.sid %>">
+
+    <button type="submit">Update Store</button>
+</form>

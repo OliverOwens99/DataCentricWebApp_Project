@@ -39,21 +39,26 @@ app.get('/stores', async (req, res) => {
     }
 });
 
-app.post('/stores', (req, res) => {
-    mySQLDAO.getstores()
-    .then(result => {
-        console.log(result)
-        res.render('stores', {stores: result}) // stores is the name of the variable in stores.ejs
+app.get('/stores/edit-store/:sid', async (req, res) => {
+    try {
+        const store = await mySQLDAO.getstores(req.params.sid);
+        const managers = await MongoDAO.getManagers();
 
-    })
-    .catch(e => {
-        res.send(e)
-    })
+        if (!store) {
+            console.error('Store not found.');
+            return res.status(404).send('Store not found.');
+        }
 
-    
-})
+        res.render('edit-store', { store, managers });
+    } catch (e) {
+        console.error('Error fetching store data:', e);
+        res.status(500).send('An error occurred while retrieving store data.');
+    }
+});
 
-app.get('/stores/edit/:sid', (req, res) => {
+
+
+app.post('/stores/edit/:sid', (req, res) => {
 
 })
 
