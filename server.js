@@ -3,6 +3,7 @@ var app = express()
 var port = 3000
 var mySQLDAO = require('./mySQLDAO.js')
 var MongoDAO = require('./MongoDAO.js') // this is the file name
+const {check, validationResult} = require('express-validator');
 
 
 let ejs = require('ejs');
