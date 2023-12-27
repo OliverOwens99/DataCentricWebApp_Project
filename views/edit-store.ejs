@@ -1,14 +1,7 @@
+<!--This is the edit-store ejs that alows you to edit and has error handling -->
 <h1>Edit Store</h1>
 <form action="/stores/edit-store/<%= store.sid %>" method="POST">
-    <label for="sid">SID:</label>
-    <input type="text" id="sid" name="sid" value="<%= store.sid %>">
-    <br>
-    <label for="location">Location:</label>
-    <input type="text" id="location" name="location" value="<%= store.location %>">
-    <br>
-    <label for="managerId">Manager ID:</label>
-    <input type="text" id="managerId" name="managerId" value="<%= store.mgrid %>" >
-    <br>
+
 
     <% if (errors && errors.length > 0) { %>
         <ul>
@@ -19,8 +12,18 @@
             <% }); %>
         </ul>
     <% } %>
+    <br>
+    <label for="sid">SID:</label>
+    <input type="text" id="sid" name="sid" value="<%= store.sid %>">
+    <br>
+    <label for="location">Location:</label>
+    <input type="text" id="location" name="location" value="<%= store.location %>">
+    <br>
+    <label for="managerId">Manager ID:</label>
+    <input type="text" id="managerId" name="managerId" value="<%= store.mgrid %>" >
+    <br>
 
     
-    <br>
+    
     <button type="submit">Update Store</button>
 </form>

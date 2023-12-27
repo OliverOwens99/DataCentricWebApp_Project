@@ -2,7 +2,7 @@ const e = require('express');
 var pmysql = require('promise-mysql');
 var pool;
 
-
+// Connect to the MySQL database
 pmysql.createPool({
     connectionLimit: 3,
     host: 'localhost',
@@ -18,7 +18,7 @@ pmysql.createPool({
     })
 
 
-
+// Get all stores
 function getstores() {
     return new Promise((resolve, reject) => {
         pool.query('SELECT * FROM store')
@@ -30,7 +30,7 @@ function getstores() {
             })
     });
 }
-
+// Get a store by id
 function getStoreById(sid) {
     return new Promise((resolve, reject) => {
         pool.query('SELECT * FROM store WHERE sid = ?', [sid])
@@ -42,6 +42,7 @@ function getStoreById(sid) {
             });
     });
 }
+// Add a new store
 function getProducts() {
     return new Promise((resolve, reject) => {
         const query = `
@@ -59,7 +60,7 @@ function getProducts() {
         });
     });
 }
-
+// Update a store
 function updateStore(storeId, location, managerId){
     return new Promise((resolve, reject) => {
         const query = `
@@ -76,13 +77,14 @@ function updateStore(storeId, location, managerId){
         });
     });
 }
+// Get a store by managerId
 async function getStoreByManagerId(managerId, currentStoreId) {
     // Assuming you have a MySQL query to fetch a store by managerId and exclude the current store
     const query = 'SELECT * FROM store WHERE mgrid = ? AND sid != ?';
     const result = await pool.query(query, [managerId, currentStoreId]);
     return result[0];
 }
-
+// Check if a product is sold in any store
 const isProductSold = (pid) => {
     return new Promise((resolve, reject) => {
         // Perform a SQL query to check if the product is associated with any store

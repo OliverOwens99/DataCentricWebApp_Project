@@ -148,7 +148,7 @@ app.get('/products/delete/:pid', async (req, res) => {
             res.render('delete', { error });
         } else {
             // If the product is not sold, proceed with the delete logic
-            // For example, mySQLDAO.deleteProduct(pid);
+
             mySQLDAO.deleteProduct(pid);
             // Redirect to the products page after a successful delete
             res.redirect('/products');
