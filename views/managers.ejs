@@ -1,0 +1,39 @@
+
+
+
+<h1>Managers</h1>
+<a href="/add-manager">Add Manager</a>
+<table>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <thead>
+        <tr>
+            <th>Manager ID</th>
+            <th>Name</th>
+            <th>Salary</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% managers.forEach(function(manager) { %>
+            <tr>
+                <td><%= manager._id %></td>
+                <td><%= manager.name %></td>
+                <td><%= manager.salary %></td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>
+<a href="/home">Home</a>
+</table>

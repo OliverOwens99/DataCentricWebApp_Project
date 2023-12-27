@@ -105,8 +105,34 @@ app.get('/products', async (req, res) => {
 });
 
 
+app.get('/products/delete/:pid', async (req, res) => {
+    try {
+        const pid = req.params.pid;
+        // Implement your delete logic here
+        // For example, mySQLDAO.deleteProduct(pid);
 
+        // Redirect to the products page after a successful delete
+        res.redirect('/products');
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('An error occurred while deleting product data.');
+    }
+});
 
+app.get('/managers', async (req, res) => {
+    const managers = await MongoDAO.getManagers();
+    console.log(managers);
+    res.render('managers', { managers });
+
+});
+
+app.get('/managers/add', async (req, res) => {
+
+});
+
+app.post('/managers/add', async (req, res) => {
+    
+});
 
 
 app.listen(port, () => {

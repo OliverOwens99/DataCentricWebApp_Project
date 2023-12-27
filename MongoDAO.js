@@ -8,15 +8,18 @@ MongoClient.connect('mongodb://127.0.0.1:27017')
         console.log(error.message)
     })
 
-var getManagers = function() {
-    return new Promise((resolve, reject) => {
-        coll.find().toArray()
-            .then(result => {
-                resolve(result)
-            })
-            .catch(e => {
-                reject(e)
-            })
-    })
-}
+    const getManagers = () => {
+        return new Promise((resolve, reject) => {
+            // Using the 'find' method to retrieve all documents from the 'coll' collection
+            coll.find().toArray()
+                .then(result => {
+                    // Resolve the promise with the result
+                    resolve(result);
+                })
+                .catch(error => {
+                    // Reject the promise with the error
+                    reject(error);
+                });
+        });
+    };
 module.exports = { getManagers };
