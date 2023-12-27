@@ -70,7 +70,7 @@ app.post('/stores/edit-stores/:sid', [
             const store = await mySQLDAO.getstore(req.params.sid);
             const managers = await MongoDAO.getManagers();
             // Pass the errors array to the template
-            res.render('edit-store', { store, managers, errors: errors.array() });
+            res.render('edit-store', { store, managers, errors: error });
         } catch (e) {
             console.error(e);
             res.status(500).send('An error occurred while retrieving store data.');
@@ -83,7 +83,7 @@ app.post('/stores/edit-stores/:sid', [
         try {
             // Implement your update logic using location, managerId, and storeId
             // For example, mySQLDAO.updateStore(storeId, location, managerId);
-
+            mySQLDAO.updateStore(storeId, location, managerId);
             // Redirect to the stores page after a successful update
             res.redirect('/stores');
         } catch (e) {
@@ -92,6 +92,9 @@ app.post('/stores/edit-stores/:sid', [
         }
     }
 });
+
+
+
 
 app.get('/products', async (req, res) => {
     try {

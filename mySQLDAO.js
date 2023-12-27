@@ -48,4 +48,23 @@ function getProducts() {
         });
     });
 }
-module.exports = { getstores, getProducts };
+
+function updateStore(storeId, location, managerId){
+    return new Promise((resolve, reject) => {
+        const query = `
+            UPDATE store
+            SET location = ?, managerId = ?
+            WHERE sid = ?`;
+        
+        pool.query(query, [location, managerId, storeId], (error, results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+    
+
+module.exports = { getstores, getProducts , updateStore};
