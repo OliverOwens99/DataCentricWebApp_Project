@@ -31,6 +31,17 @@ function getstores() {
     });
 }
 
+function getStoreById(sid) {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT * FROM store WHERE sid = ?', [sid])
+            .then(result => {
+                resolve(result[0]); // Assuming that sid is unique and should return only one store
+            })
+            .catch(e => {
+                reject(e);
+            });
+    });
+}
 function getProducts() {
     return new Promise((resolve, reject) => {
         const query = `
@@ -53,7 +64,7 @@ function updateStore(storeId, location, managerId){
     return new Promise((resolve, reject) => {
         const query = `
             UPDATE store
-            SET location = ?, managerId = ?
+            SET location = ?, mgrid = ?
             WHERE sid = ?`;
         
         pool.query(query, [location, managerId, storeId], (error, results) => {
@@ -65,6 +76,11 @@ function updateStore(storeId, location, managerId){
         });
     });
 }
-    
+async function getStoreByManagerId(managerId, currentStoreId) {
+    // Assuming you have a MySQL query to fetch a store by managerId and exclude the current store
+    const query = 'SELECT * FROM store WHERE mgrid = ? AND sid != ?';
+    const result = await pool.query(query, [managerId, currentStoreId]);
+    return result[0];
+}
 
-module.exports = { getstores, getProducts , updateStore};
+module.exports = { getstores, getProducts , updateStore , getStoreById , getStoreByManagerId};

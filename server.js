@@ -4,6 +4,9 @@ var port = 3000
 var mySQLDAO = require('./mySQLDAO.js')
 var MongoDAO = require('./MongoDAO.js') // this is the file name
 const {check, validationResult} = require('express-validator');
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 
 let ejs = require('ejs');
@@ -15,7 +18,7 @@ app.get('/', function (req, res) {
     res.render('home');
 })
 
-
+// to display the stores page and the data from the database
 app.get('/stores', async (req, res) => {
     try {
         const stores = await mySQLDAO.getstores();
@@ -39,9 +42,10 @@ app.get('/stores', async (req, res) => {
     }
 });
 
+// to display the edit-store page
 app.get('/stores/edit-store/:sid', async (req, res) => {
     try {
-        const store = await mySQLDAO.getstores(req.params.sid);
+        const store = await mySQLDAO.getStoreById(req.params.sid);
         const managers = await MongoDAO.getManagers();
 
         if (!store) {
@@ -49,7 +53,7 @@ app.get('/stores/edit-store/:sid', async (req, res) => {
             return res.status(404).send('Store not found.');
         }
 
-        res.render('edit-store', { store, managers });
+        res.render('edit-store', { store, managers, errors: undefined });
     } catch (e) {
         console.error('Error fetching store data:', e);
         res.status(500).send('An error occurred while retrieving store data.');
@@ -57,39 +61,62 @@ app.get('/stores/edit-store/:sid', async (req, res) => {
 });
 
 
-app.post('/stores/edit-stores/:sid', [
+app.post('/stores/edit-store/:sid', [
     // Add validation rules here using express-validator
+    check('sid').custom((value, { req }) => {
+        // Check if SID is not editable
+        if (req.params.sid !== req.body.sid) {
+            throw new Error('SID is not editable.');
+        }
+        return true;
+    }),
     check('location').isLength({ min: 1 }).withMessage('Location should be a minimum of 1 character'),
     check('managerId').isLength({ min: 4 }).withMessage('Manager ID should be 4 characters'),
+    check('managerId').custom(async (value, { req }) => {
+        // Check if Manager ID is not assigned to another store
+        const otherStore = await mySQLDAO.getStoreByManagerId(value, req.params.sid);
+        if (otherStore) {
+            throw new Error('Manager ID is already assigned to another store.');
+        }
+        return true;
+    }),
+    check('managerId').custom(async (value, { req }) => {
+        // Check if Manager ID exists in MongoDB
+        const manager = await MongoDAO.getManagerById(value);
+        if (!manager) {
+            throw new Error('Manager ID does not exist in MongoDB.');
+        }
+        return true;
+    }),
 ], async (req, res) => {
-    const errors = validationResult(req);
+    try {
+        const store = await mySQLDAO.getStoreById(req.params.sid);
+        const managers = await MongoDAO.getManagers();
 
-    if (!errors.isEmpty()) {
-        // If there are validation errors, render the edit-store page with errors
-        try {
-            const store = await mySQLDAO.getstore(req.params.sid);
-            const managers = await MongoDAO.getManagers();
-            // Pass the errors array to the template
-            res.render('edit-store', { store, managers, errors: error });
-        } catch (e) {
-            console.error(e);
-            res.status(500).send('An error occurred while retrieving store data.');
-        }
-    } else {
-        // Validation passed, proceed with the update logic
-        const { location, managerId } = req.body;
-        const storeId = req.params.sid;
+        // Validate the request body
+        const errors = validationResult(req);
 
-        try {
-            // Implement your update logic using location, managerId, and storeId
-            // For example, mySQLDAO.updateStore(storeId, location, managerId);
-            mySQLDAO.updateStore(storeId, location, managerId);
-            // Redirect to the stores page after a successful update
-            res.redirect('/stores');
-        } catch (e) {
-            console.error(e);
-            res.status(500).send('An error occurred while updating store data.');
+        if (!errors.isEmpty()) {
+            // If there are validation errors, render the edit-store page with errors
+            console.log(errors.array());
+            res.render('edit-store', { store, managers, errors: errors.array() });
+        } else {
+            // Validation passed, proceed with the update logic
+            const { location, managerId } = req.body;
+            const storeId = req.params.sid;
+
+            try {
+                mySQLDAO.updateStore(storeId, location, managerId);
+                // Redirect to the stores page after a successful update
+                res.redirect('/stores');
+            } catch (e) {
+                console.error(e);
+                res.status(500).send('An error occurred while updating store data.');
+            }
         }
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('An error occurred while retrieving store data.');
     }
 });
 
