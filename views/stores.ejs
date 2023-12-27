@@ -1,5 +1,7 @@
 <style>
-  table, th, td {
+  table,
+  th,
+  td {
     border: 1px solid black;
   }
 </style>
@@ -9,23 +11,29 @@
 <table>
   <thead>
     <tr>
-      <th >SID</th>
+      <th>SID</th>
       <th>Location</th>
       <th>MANAGER ID</th>
       <th>Action</th>
     </tr>
   </thead>
   <tbody>
-    <% for(var i=0; i<stores.length; i++) {%>
-    <tr>
-      <td><%= stores[i].sid %></td>
-      <td><%= stores[i].location %></td>
-      <td><%= stores[i].manager_id %></td>
-      <td>
-        <a href="/edit-store/<%= stores[i].sid %>">Update</a>
-      </td>
-    </tr>
-    <% } %>
+    <% stores.forEach(function(store) { %>
+      <tr>
+        <td>
+          <%= store.sid %>
+        </td>
+        <td>
+          <%= store.location %>
+        </td>
+        <td>
+          <%= store.mgrid %>
+        </td>
+        <td>
+          <a href="/edit-store/<%= stores.sid %>">Update</a>
+        </td>
+      </tr>
+      <% }); %>
   </tbody>
 </table>
 

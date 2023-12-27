@@ -8,7 +8,7 @@ MongoClient.connect('mongodb://127.0.0.1:27017')
         console.log(error.message)
     })
 
-function getManagers() {
+var getManagers = function() {
     return new Promise((resolve, reject) => {
         coll.find().toArray()
             .then(result => {
