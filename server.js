@@ -127,7 +127,7 @@ app.get('/products', async (req, res) => {
     try {
         const products = await mySQLDAO.getProducts();
         console.log(products);
-        res.render('products', { products , error: undefined});
+        res.render('products', { products, error: undefined });
     } catch (e) {
         console.error(e);
         res.status(500).send('An error occurred while retrieving product data.');
@@ -144,7 +144,7 @@ app.get('/products/delete/:pid', async (req, res) => {
 
         if (isProductSold) {
             // If the product is sold, render the delete-product-error template with the error
-            const error = 'Cannot delete the product because it is sold in a store.';
+            const error = `${pid} Cannot deleted because it is sold in a store.`;
             res.render('delete', { error });
         } else {
             // If the product is not sold, proceed with the delete logic
@@ -159,14 +159,25 @@ app.get('/products/delete/:pid', async (req, res) => {
     }
 });
 
+// to display the managers page and the data from the database
 app.get('/managers', async (req, res) => {
-    const managers = await MongoDAO.getManagers();
-    console.log(managers);
-    res.render('managers', { managers });
+    try {
+        // Fetch managers data
+        let managers = await MongoDAO.getManagers();
 
+        // Sort managers by _id
+        managers.sort((a, b) => a._id.toString().localeCompare(b._id.toString()));
+
+        // Render the managers page with the sorted managers data
+        res.render('managers', { managers });
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('An error occurred while retrieving manager data.');
+    }
 });
 // to display the addManager page
 app.get('/managers/add', async (req, res) => {
+
     res.render('addManager', { errors: undefined });
 });
 // to add the manager to the database
