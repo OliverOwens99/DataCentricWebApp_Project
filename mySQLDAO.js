@@ -46,10 +46,10 @@ function getStoreById(sid) {
 function getProducts() {
     return new Promise((resolve, reject) => {
         const query = `
-            SELECT p.*, s.sid, s.location, ps.price
-            FROM product p
-            JOIN product_store ps ON p.pid = ps.pid
-            JOIN store s ON ps.sid = s.sid`;
+        SELECT p.*, s.sid, s.location, ps.price
+        FROM product p
+        LEFT JOIN product_store ps ON p.pid = ps.pid
+        LEFT JOIN store s ON ps.sid = s.sid`;
         
         pool.query(query, (error, results) => {
             if (error) {
