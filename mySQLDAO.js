@@ -28,11 +28,24 @@ function getstores() {
             .catch(e => {
                 reject(e)
             })
-    })
-
-
-
-
-
+    });
 }
-module.exports = { getstores };
+
+function getProducts() {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT p.*, s.sid, s.location, ps.price
+            FROM product p
+            JOIN product_store ps ON p.pid = ps.pid
+            JOIN store s ON ps.sid = s.sid`;
+        
+        pool.query(query, (error, results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+module.exports = { getstores, getProducts };

@@ -57,11 +57,52 @@ app.get('/stores/edit-store/:sid', async (req, res) => {
 });
 
 
+app.post('/stores/edit-stores/:sid', [
+    // Add validation rules here using express-validator
+    check('location').isLength({ min: 1 }).withMessage('Location should be a minimum of 1 character'),
+    check('managerId').isLength({ min: 4 }).withMessage('Manager ID should be 4 characters'),
+], async (req, res) => {
+    const errors = validationResult(req);
 
-app.post('/stores/edit/:sid', (req, res) => {
+    if (!errors.isEmpty()) {
+        // If there are validation errors, render the edit-store page with errors
+        try {
+            const store = await mySQLDAO.getstore(req.params.sid);
+            const managers = await MongoDAO.getManagers();
+            // Pass the errors array to the template
+            res.render('edit-store', { store, managers, errors: errors.array() });
+        } catch (e) {
+            console.error(e);
+            res.status(500).send('An error occurred while retrieving store data.');
+        }
+    } else {
+        // Validation passed, proceed with the update logic
+        const { location, managerId } = req.body;
+        const storeId = req.params.sid;
 
-})
+        try {
+            // Implement your update logic using location, managerId, and storeId
+            // For example, mySQLDAO.updateStore(storeId, location, managerId);
 
+            // Redirect to the stores page after a successful update
+            res.redirect('/stores');
+        } catch (e) {
+            console.error(e);
+            res.status(500).send('An error occurred while updating store data.');
+        }
+    }
+});
+
+app.get('/products', async (req, res) => {
+    try {
+        const products = await mySQLDAO.getProducts();
+        console.log(products);
+        res.render('products', { products });
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('An error occurred while retrieving product data.');
+    }
+});
 
 
 
