@@ -83,4 +83,40 @@ async function getStoreByManagerId(managerId, currentStoreId) {
     return result[0];
 }
 
-module.exports = { getstores, getProducts , updateStore , getStoreById , getStoreByManagerId};
+const isProductSold = (pid) => {
+    return new Promise((resolve, reject) => {
+        // Perform a SQL query to check if the product is associated with any store
+        const query = 'SELECT COUNT(*) as count FROM product_store WHERE pid = ?';
+        pool.query(query, [pid])
+            .then(result => {
+                // Resolve with true if the product is associated with at least one store
+                resolve(result[0].count > 0);
+            })
+            .catch(error => {
+                // Reject with the error if there's an issue with the query
+                reject(error);
+            });
+    });
+};
+
+const deleteProduct = (pid) => {
+    return new Promise((resolve, reject) => {
+        // Perform a SQL query to delete the product
+        const query = 'DELETE FROM product WHERE pid = ?';
+        pool.query(query, [pid])
+            .then(result => {
+                // Resolve with true if the product is associated with at least one store
+                resolve(result[0].count > 0);
+            })
+            .catch(error => {
+                // Reject with the error if there's an issue with the query
+                reject(error);
+            });
+    });
+};
+
+
+    
+
+
+module.exports = { getstores, getProducts , updateStore , getStoreById , getStoreByManagerId , isProductSold , deleteProduct};

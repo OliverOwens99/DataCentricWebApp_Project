@@ -3,7 +3,7 @@ var app = express()
 var port = 3000
 var mySQLDAO = require('./mySQLDAO.js')
 var MongoDAO = require('./MongoDAO.js') // this is the file name
-const {check, validationResult} = require('express-validator');
+const { check, validationResult } = require('express-validator');
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -14,7 +14,7 @@ app.set('view engine', 'ejs');
 
 app.get('/', function (req, res) {
     //display a file called home.ejs
-    
+
     res.render('home');
 })
 
@@ -127,22 +127,32 @@ app.get('/products', async (req, res) => {
     try {
         const products = await mySQLDAO.getProducts();
         console.log(products);
-        res.render('products', { products });
+        res.render('products', { products , error: undefined});
     } catch (e) {
         console.error(e);
         res.status(500).send('An error occurred while retrieving product data.');
     }
 });
 
-
+// to delete the product from the database if it is not sold in any store
 app.get('/products/delete/:pid', async (req, res) => {
     try {
         const pid = req.params.pid;
-        // Implement your delete logic here
-        // For example, mySQLDAO.deleteProduct(pid);
 
-        // Redirect to the products page after a successful delete
-        res.redirect('/products');
+        // Check if the product is sold in any store (you'll need to implement this logic)
+        const isProductSold = await mySQLDAO.isProductSold(pid);
+
+        if (isProductSold) {
+            // If the product is sold, render the delete-product-error template with the error
+            const error = 'Cannot delete the product because it is sold in a store.';
+            res.render('delete', { error });
+        } else {
+            // If the product is not sold, proceed with the delete logic
+            // For example, mySQLDAO.deleteProduct(pid);
+            mySQLDAO.deleteProduct(pid);
+            // Redirect to the products page after a successful delete
+            res.redirect('/products');
+        }
     } catch (e) {
         console.error(e);
         res.status(500).send('An error occurred while deleting product data.');
@@ -161,7 +171,7 @@ app.get('/managers/add', async (req, res) => {
 });
 
 app.post('/managers/add', async (req, res) => {
-    
+
 });
 
 
