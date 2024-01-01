@@ -35,7 +35,7 @@ function getStoreById(sid) {
     return new Promise((resolve, reject) => {
         pool.query('SELECT * FROM store WHERE sid = ?', [sid])
             .then(result => {
-                resolve(result[0]); // Assuming that sid is unique and should return only one store
+                resolve(result[0]); 
             })
             .catch(e => {
                 reject(e);
@@ -79,7 +79,7 @@ function updateStore(storeId, location, managerId){
 }
 // Get a store by managerId
 async function getStoreByManagerId(managerId, currentStoreId) {
-    // Assuming you have a MySQL query to fetch a store by managerId and exclude the current store
+    
     const query = 'SELECT * FROM store WHERE mgrid = ? AND sid != ?';
     const result = await pool.query(query, [managerId, currentStoreId]);
     return result[0];
